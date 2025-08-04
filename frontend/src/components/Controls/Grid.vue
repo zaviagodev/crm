@@ -400,7 +400,7 @@ const parentDoc = defineModel('parent')
 
 provide('parentDoc', parentDoc)
 
-const showRowList = ref(new Array(rows.value?.length || []).fill(false))
+const showRowList = ref(new Array(rows.value?.length || 0).fill(false))
 const selectedRows = reactive(new Set())
 
 const showGridFieldsEditorModal = ref(false)
@@ -504,19 +504,29 @@ const addRow = () => {
   newRow.name = getRandom(10)
   showRowList.value.push(false)
   newRow['__islocal'] = true
-  newRow['idx'] = rows.value.length + 1
+  newRow['idx'] = (rows.value?.length || 0) + 1
   newRow['doctype'] = props.doctype
   newRow['parentfield'] = props.parentFieldname
   newRow['parenttype'] = props.parentDoctype
+  
+  // Initialize rows.value as an array if it's undefined
+  if (!rows.value) {
+    rows.value = []
+  }
+  
   rows.value.push(newRow)
   triggerOnRowAdd(newRow)
 }
 
 const deleteRows = () => {
-  rows.value = rows.value.filter((row) => !selectedRows.has(row.name))
-  triggerOnRowRemove(selectedRows, rows.value)
+  if (rows.value) {
+    rows.value = rows.value.filter((row) => !selectedRows.has(row.name))
+    triggerOnRowRemove(selectedRows, rows.value)
+  }
 
-  showRowList.value.pop()
+  if (showRowList.value.length > 0) {
+    showRowList.value.pop()
+  }
   selectedRows.clear()
 }
 
