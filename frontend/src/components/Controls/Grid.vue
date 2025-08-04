@@ -509,11 +509,13 @@ const addRow = () => {
   newRow['parentfield'] = props.parentFieldname
   newRow['parenttype'] = props.parentDoctype
   
-  // Initialize rows.value as an array if it's undefined
-  if (!rows.value) {
-    rows.value = []
+  // Handle the case where rows.value is undefined
+  if (!rows.value || !Array.isArray(rows.value)) {
+    // Create a new array with the new row
+    rows.value = [newRow]
   }
   
+  // Add to existing array
   rows.value.push(newRow)
   triggerOnRowAdd(newRow)
 }
